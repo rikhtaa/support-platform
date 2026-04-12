@@ -3,6 +3,13 @@
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 import { ConvexProvider,  ConvexReactClient } from "convex/react"
+import { ClerkProvider } from '@clerk/nextjs'
+import { useAuth } from "@clerk/nextjs"
+import { ConvexProviderWithClerk } from "convex/react-clerk"
+
+if(!process.env.NEXT_PUBLIC_CONVEX_URL) {
+  throw new Error("Missing NEXT_PUBLIC_CONVEX_URL is in your .env file")
+} 
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL || "http://127.0.0.1:3210")
 function ThemeProvider({
@@ -10,7 +17,7 @@ function ThemeProvider({
   ...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
   return (
-    <ConvexProvider client={convex}>
+    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
       <NextThemesProvider
         attribute="class"
         defaultTheme="system"
@@ -21,7 +28,7 @@ function ThemeProvider({
       <ThemeHotkey />
       {children}
     </NextThemesProvider>
-    </ConvexProvider>
+    </ConvexProviderWithClerk>
   )
 }
 
