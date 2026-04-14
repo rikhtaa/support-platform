@@ -13,21 +13,21 @@ const isOrgFreeRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
-  // const { userId, orgId } = await auth();
-  // if(!isPublicRoute(req)){
-  //   await auth.protect()
-  // }
+  const { userId, orgId } = await auth();
+  if(!isPublicRoute(req)){
+    await auth.protect()
+  }
 
-  // if(userId && !orgId && !isOrgFreeRoute(req)){
-  //   const searchparams = new URLSearchParams({ redirectUrl: req.url})
+  if(userId && !orgId && !isOrgFreeRoute(req)){
+    const searchparams = new URLSearchParams({ redirectUrl: req.url})
 
-  //   const orgSelection = new URL(
-  //     `/org-selection?${searchparams.toString()}`,
-  //     req.url
-  //   )
+    const orgSelection = new URL(
+      `/org-selection?${searchparams.toString()}`,
+      req.url
+    )
 
-  //   return NextResponse.redirect(orgSelection)
-  // }
+    return NextResponse.redirect(orgSelection)
+  }
 });
 
 
