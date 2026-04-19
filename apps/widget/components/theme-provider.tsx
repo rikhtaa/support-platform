@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Provider } from "jotai"
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 import { ConvexProvider,  ConvexReactClient } from "convex/react"
 
@@ -19,7 +20,9 @@ function ThemeProvider({
       {...props}
     >
       <ThemeHotkey />
-      {children}
+      <Provider>
+       {children}
+      </Provider>
     </NextThemesProvider>
     </ConvexProvider>
   )
