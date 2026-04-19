@@ -20,7 +20,7 @@ function ThemeProvider({
     <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
       <NextThemesProvider
         attribute="class"
-        defaultTheme="system"
+        defaultTheme="light"
         enableSystem
         disableTransitionOnChange
       {...props}
