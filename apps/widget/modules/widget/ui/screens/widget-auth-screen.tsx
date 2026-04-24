@@ -14,6 +14,8 @@ import { WidgetHeader } from "@/modules/widget/ui/components/widget-header";
 import { useMutation } from "convex/react";
 import { api} from "@workspace/backend/_generated/api"
 import { Doc } from "@workspace/backend/_generated/dataModel";
+import { useAtomValue, useSetAtom } from "jotai";
+import { contactSessionIdAtomFamily, organizationIdAtom, screenAtom } from "../../atoms/widget-atoms";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -23,6 +25,12 @@ const formSchema = z.object({
 const organizationId = "org_123" // TODO: get this dynamically from the widget props or context
  
 export const WidgetAuthScreen = () => {
+   const setScreen = useSetAtom(screenAtom);
+
+  const organizationId = useAtomValue(organizationIdAtom)
+  const setContactSessionId = useSetAtom(
+    contactSessionIdAtomFamily(organizationId || "")
+  )
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,6 +66,9 @@ export const WidgetAuthScreen = () => {
       organizationId,
       metadata
     })
+
+    setContactSessionId(contactSessionId)
+    setScreen("selection")
 
   };
 

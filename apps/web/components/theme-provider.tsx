@@ -2,8 +2,7 @@
 
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
-import { ConvexProvider,  ConvexReactClient } from "convex/react"
-import { ClerkProvider } from '@clerk/nextjs'
+import { ConvexReactClient } from "convex/react"
 import { useAuth } from "@clerk/nextjs"
 import { ConvexProviderWithClerk } from "convex/react-clerk"
 
