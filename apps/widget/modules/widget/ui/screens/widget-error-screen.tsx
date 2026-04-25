@@ -1,3 +1,5 @@
+"use client";
+
 import { useAtomValue } from "jotai"
 import { errorMessageAtom } from "../../atoms/widget-atoms"
 import { WidgetHeader } from "../components/widget-header"
