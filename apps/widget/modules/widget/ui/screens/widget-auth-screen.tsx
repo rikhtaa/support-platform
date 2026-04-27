@@ -23,8 +23,6 @@ const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
 })
-
-const organizationId = "org_123" // TODO: get this dynamically from the widget props or context
  
 export const WidgetAuthScreen = () => {
    const setScreen = useSetAtom(screenAtom);
