@@ -130,7 +130,7 @@ export const create = mutation({
         const conversationId = await ctx.db.insert("conversations", {
             contactSessionId: session._id,
             status: "unresolved",
-            organizationId: args.contactSessionId,
+            organizationId: args.organizationId,
             threadId,
         })
 
