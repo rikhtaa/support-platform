@@ -50,7 +50,7 @@ export const getOne = query({
     if(!contactSession){
         throw new ConvexError({
             code: "NOT_FOUND",
-            message: "Conversation not found"
+            message: "Contact Session not found"
         })
     }
 
