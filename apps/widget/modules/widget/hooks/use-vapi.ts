@@ -40,7 +40,6 @@ export const useVapi = () => {
         })
 
         vapiInstance.on("error", (error) => {
-          console.log(error, "Vapi_Error")
             setIsConnecting(false)
           
         })

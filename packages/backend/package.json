@@ -17,7 +17,7 @@
     "@ai-sdk/groq": "^3.0.35",
     "@ai-sdk/xai": "^3.0.83",
     "@clerk/backend": "^3.2.13",
-    "@convex-dev/agent": "^0.6.1",
+    "@convex-dev/agent": "0.6.1",
     "ai": "^6.0.168",
     "convex": "1.36.1",
     "convex-helpers": "^0.1.115"

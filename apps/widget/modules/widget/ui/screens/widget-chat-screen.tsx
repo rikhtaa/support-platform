@@ -36,7 +36,6 @@ import {
   AISuggestions,
 } from "@workspace/ui/components/ai/suggestion"
 import { FormField } from "@workspace/ui/components/form";
-import { Field } from "@workspace/ui/components/field";
 import { DicebearAvatar } from "@workspace/ui/components/dicebear-avatar";
 
 const formSchema = z.object({

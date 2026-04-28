@@ -32,6 +32,12 @@ importers:
       '@clerk/nextjs':
         specifier: ^7.0.12
         version: 7.0.12(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@convex-dev/agent':
+        specifier: 0.6.1
+        version: 0.6.1(@ai-sdk/provider-utils@4.0.23(zod@3.25.76))(ai@6.0.168(zod@3.25.76))(convex-helpers@0.1.115(@standard-schema/spec@1.1.0)(convex@1.25.4(react@19.2.4))(hono@4.12.9)(react@19.2.4)(typescript@5.9.3)(zod@3.25.76))(convex@1.25.4(react@19.2.4))(react@19.2.4)
+      '@hookform/resolvers':
+        specifier: 5.2.2
+        version: 5.2.2(react-hook-form@7.72.1(react@19.2.4))
       '@sentry/nextjs':
         specifier: '10'
         version: 10.48.0(@opentelemetry/context-async-hooks@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/core@2.6.1(@opentelemetry/api@1.9.1))(@opentelemetry/sdk-trace-base@2.6.1(@opentelemetry/api@1.9.1))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(webpack@5.106.1)
@@ -71,6 +77,12 @@ importers:
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
+      react-hook-form:
+        specifier: 7.72.1
+        version: 7.72.1(react@19.2.4)
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.1.18
@@ -194,7 +206,7 @@ importers:
         specifier: ^3.2.13
         version: 3.2.13(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@convex-dev/agent':
-        specifier: ^0.6.1
+        specifier: 0.6.1
         version: 0.6.1(@ai-sdk/provider-utils@4.0.23(zod@3.25.76))(ai@6.0.168(zod@3.25.76))(convex-helpers@0.1.115(@standard-schema/spec@1.1.0)(convex@1.36.1(react@19.2.4))(hono@4.12.9)(react@19.2.4)(typescript@6.0.3)(zod@3.25.76))(convex@1.36.1(react@19.2.4))(react@19.2.4)
       ai:
         specifier: ^6.0.168
@@ -212,9 +224,6 @@ importers:
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      cross-env:
-        specifier: ^10.1.0
-        version: 10.1.0
       typescript:
         specifier: latest
         version: 6.0.3
@@ -817,9 +826,6 @@ packages:
 
   '@emnapi/runtime@1.7.1':
     resolution: {integrity: sha512-PVtJr5CmLwYAU9PZDMITZoR5iAOShYREoR45EyyLrbntV50mdePTgUn4AmOw90Ifcj+x2kRjdzr1HP3RrNiHGA==}
-
-  '@epic-web/invariant@1.0.0':
-    resolution: {integrity: sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA==}
 
   '@esbuild/aix-ppc64@0.25.4':
     resolution: {integrity: sha512-1VCICWypeQKhVbE9oW/sJaAmjLxhVqacdkvPLEjwlttjfwENRSClS8EjBz0KzRyFSCPDIkuXW34Je/vk7zdB7Q==}
@@ -3800,11 +3806,6 @@ packages:
   countries-and-timezones@3.9.0:
     resolution: {integrity: sha512-3upkVtUfZgdp5xOQI/Deg1ye73ae6bygJMO4UvtUi6wLjwcj7cBqx2PzSZ1VL8i5iveBbjhsQp2Judx7kPKivA==}
     engines: {node: '>=8.x', npm: '>=5.x'}
-
-  cross-env@10.1.0:
-    resolution: {integrity: sha512-GsYosgnACZTADcmEyJctkJIoqAhHjttw7RsFrVoJNXbsWWqaq6Ym+7kZjq6mS45O0jij6vtiReppKQEtqWy6Dw==}
-    engines: {node: '>=20'}
-    hasBin: true
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -7049,8 +7050,6 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@epic-web/invariant@1.0.0': {}
-
   '@esbuild/aix-ppc64@0.25.4':
     optional: true
 
@@ -9908,11 +9907,6 @@ snapshots:
       typescript: 5.9.3
 
   countries-and-timezones@3.9.0: {}
-
-  cross-env@10.1.0:
-    dependencies:
-      '@epic-web/invariant': 1.0.0
-      cross-spawn: 7.0.6
 
   cross-spawn@7.0.6:
     dependencies:
