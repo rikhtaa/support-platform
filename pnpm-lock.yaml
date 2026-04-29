@@ -217,6 +217,9 @@ importers:
       convex-helpers:
         specifier: ^0.1.115
         version: 0.1.115(@standard-schema/spec@1.1.0)(convex@1.36.1(react@19.2.4))(hono@4.12.9)(react@19.2.4)(typescript@6.0.3)(zod@3.25.76)
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^25.1.0
