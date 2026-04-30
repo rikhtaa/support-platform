@@ -2,7 +2,6 @@ import { generateText } from "ai";
 import type { StorageActionWriter } from "convex/server";
 import {assert}  from "convex-helpers"
 import { Id } from "../_generated/dataModel";
-import { TextDecoder } from "node:util";
 import { google } from "@ai-sdk/google";
 
 //13:42 use gemini or something grop doesn't support this
