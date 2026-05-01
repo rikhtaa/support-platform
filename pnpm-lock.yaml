@@ -80,6 +80,9 @@ importers:
       react-hook-form:
         specifier: 7.72.1
         version: 7.72.1(react@19.2.4)
+      sonner:
+        specifier: 1.7.4
+        version: 1.7.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       zod:
         specifier: 3.25.76
         version: 3.25.76
@@ -349,6 +352,9 @@ importers:
       shadcn:
         specifier: ^4.1.2
         version: 4.1.2(@types/node@25.2.3)(typescript@5.9.3)
+      sonner:
+        specifier: 1.7.4
+        version: 1.7.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       tailwind-merge:
         specifier: ^3.5.0
         version: 3.5.0
@@ -14327,7 +14333,7 @@ snapshots:
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.16.0
       acorn-import-phases: 1.0.4(acorn@8.16.0)
-      browserslist: 4.28.1
+      browserslist: 4.28.2
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.20.1
       es-module-lexer: 2.0.0
