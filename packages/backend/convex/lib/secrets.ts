@@ -8,7 +8,7 @@ function getHeaders() {
     };
 }
 
-export async function getSecretValue<T = Record<string, unknown>>(
+export async function getSecretValue<T = Record<string, string>>(
     secretName: string
 ): Promise<T | null> {
     try {

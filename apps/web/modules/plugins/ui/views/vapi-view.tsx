@@ -27,6 +27,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
+import { VapiConnectedView } from "../components/vapi-connected-view"
 
 const vapiFeatures: Feature[] = [
     {
@@ -55,6 +56,50 @@ const formSchema = z.object({
     publicApiKey: z.string().min(1, {message: "Public API key is required"}),
     privateApiKey: z.string().min(1, { message: "Private API key is required" })
 })
+
+export const VapiView = () => {
+    const vapiPlugin = useQuery(api.private.plugins.getOne, { service: "vapi" })
+
+    const [connectOpen, setConnectOpen] = useState(false)
+    const [removeOpen, setRemoveOpen] = useState(false)
+
+    const toggleConnection = () => {
+        if(vapiPlugin){
+            setRemoveOpen(true)
+        }else{
+            setConnectOpen(true)
+        }
+    }
+
+    return (
+        <>
+        <VapiPluginForm open={connectOpen} setOpen={setConnectOpen} />
+        <VapiPluginRemoveForm open={removeOpen} setOpen={setRemoveOpen} />
+        <div className="flex min-h-screen flex-col bg-muted p-8">
+            <div className="mx-auto w-full max-w-3xl">
+                <div className="space-y-2">
+                    <h1 className="text-2xl md:text-4xl">Vapi Plugin</h1>
+                    <p className="text-muted-foreground">Connect Vapi to enable AI voice calls
+                    and phone support</p>
+                </div>
+                <div className="mt-8">
+                    {vapiPlugin ? (
+                      <VapiConnectedView onDisconnect={toggleConnection}/>
+                    ): (
+                    <PluginCard
+                        serviceImage="/vapi.jpg"
+                        serviceName="Vapi"
+                        features={vapiFeatures}
+                        isDisabled={vapiPlugin === undefined}
+                        onSubmit={toggleConnection}
+                    />
+                    )}
+                </div>
+            </div>
+        </div>
+        </>
+    )
+}
 
 const VapiPluginForm = ({
     open,
@@ -116,7 +161,7 @@ const VapiPluginForm = ({
                                 <Input
                                  {...field}
                                  placeholder="Your public API key"
-                                 type="text"
+                                 type="password"
                                 />
                             </FormControl>
                             <FormMessage/>
@@ -133,7 +178,7 @@ const VapiPluginForm = ({
                                 <Input
                                  {...field}
                                  placeholder="Your private API key"
-                                 type="text"
+                                 type="password"
                                 />
                             </FormControl>
                             <FormMessage/>
@@ -155,46 +200,45 @@ const VapiPluginForm = ({
     )
 }
 
-export const VapiView = () => {
-    const vapiPlugin = useQuery(api.private.plugins.getOne, { service: "vapi" })
+const VapiPluginRemoveForm = ({
+    open,
+    setOpen,
+}:{   
+    open: boolean
+    setOpen: (value: boolean) => void
+}) => {
+    const removePlugin = useMutation(api.private.plugins.remove)
 
-    const [connectOpen, setConnectOpen] = useState(false)
-    const [removeOpen, setRemoveOpen] = useState(false)
-
-    const handleSubmit = () => {
-
-        if(vapiPlugin){
-            setRemoveOpen(true)
-        }else{
-            setConnectOpen(true)
+    const onSubmit = async () =>{
+        try {
+            await removePlugin({
+                service: "vapi", 
+            })
+            setOpen(false)
+            toast.success("Vapi plugin removed")
+        } catch (error) {
+             console.error(error)
+             toast.error("Something went wrong")
         }
     }
 
     return (
-        <>
-        <VapiPluginForm open={connectOpen} setOpen={setConnectOpen} />
-        <div className="flex min-h-screen flex-col bg-muted p-8">
-            <div className="mx-auto w-full max-w-3xl">
-                <div className="space-y-2">
-                    <h1 className="text-2xl md:text-4xl">Vapi Plugin</h1>
-                    <p className="text-muted-foreground">Connect Vapi to enable AI voice calls
-                    and phone support</p>
-                </div>
-                <div className="mt-8">
-                    {vapiPlugin ? (
-                      <p>Connected!!</p>
-                    ): (
-                    <PluginCard
-                        serviceImage="/vapi.jpg"
-                        serviceName="Vapi"
-                        features={vapiFeatures}
-                        isDisabled={vapiPlugin === undefined}
-                        onSubmit={handleSubmit}
-                    />
-                    )}
-                </div>
-            </div>
-        </div>
-        </>
+        <Dialog onOpenChange={setOpen} open={open}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogHeader>
+                        <DialogTitle>Disconnect Vapi</DialogTitle>
+                    </DialogHeader>
+                </DialogHeader>
+                <DialogDescription>
+                    Are you sure you want to disconnect the vapi plugin?
+                </DialogDescription>
+                <DialogFooter>
+                  <Button onClick={onSubmit} variant="destructive">
+                    Disconnect
+                  </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     )
 }
