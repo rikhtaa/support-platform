@@ -42,7 +42,7 @@ export const getAssistants = action({
 
     const secretName = plugin.secretName
     const secretData = await getSecretValue<{
-      privateAPiKey: string
+      privateApiKey: string
       publicApiKey: string
     }>(secretName)
 
@@ -53,7 +53,7 @@ export const getAssistants = action({
       });  
     }
     
-     if(!secretData.privateAPiKey || !secretData.publicApiKey){
+     if(!secretData.privateApiKey || !secretData.publicApiKey){
       throw new ConvexError({
         code: "NOT_FOUND",
         message: "Credentials incomplete. Please reconnect your Vapi account.",
@@ -61,7 +61,7 @@ export const getAssistants = action({
     }
 
     const vapiClient = new VapiClient({
-      token: secretData.privateAPiKey,
+      token: secretData.privateApiKey,
     })
 
     const assistants = await vapiClient.assistants.list()
@@ -109,7 +109,7 @@ export const getPhoneNumbers = action({
 
     const secretName = plugin.secretName
     const secretData = await getSecretValue<{
-      privateAPiKey: string
+      privateApiKey: string
       publicApiKey: string
     }>(secretName)
 
@@ -120,7 +120,7 @@ export const getPhoneNumbers = action({
       });  
     }
     
-     if(!secretData.privateAPiKey || !secretData.publicApiKey){
+     if(!secretData.privateApiKey || !secretData.publicApiKey){
       throw new ConvexError({
         code: "NOT_FOUND",
         message: "Credentials incomplete. Please reconnect your Vapi account.",
@@ -128,7 +128,7 @@ export const getPhoneNumbers = action({
     }
 
     const vapiClient = new VapiClient({
-      token: secretData.privateAPiKey,
+      token: secretData.privateApiKey,
     })
 
     const phoneNumbers = await vapiClient.phoneNumbers.list()
