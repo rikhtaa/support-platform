@@ -50,6 +50,9 @@ importers:
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      bowser:
+        specifier: ^2.14.1
+        version: 2.14.1
       convex:
         specifier: 1.25.4
         version: 1.25.4(react@19.2.4)
