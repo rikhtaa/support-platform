@@ -1,7 +1,6 @@
 import { v } from "convex/values";
 import { mutation } from "../_generated/server";
-
-const SESSION_DURATION_MS = 10000;
+import { SESSION_DURATION_MS } from "../constants";
 
 export const create = mutation({
   args: {
@@ -10,7 +9,7 @@ export const create = mutation({
     organizationId: v.string(),
     metadata: v.optional(v.object({
       userAgent: v.optional(v.string()),
-      language: v.optional(v.string()),
+       language: v.optional(v.string()),
       languages:v.optional(v.string()),
       platform: v.optional(v.string()),
       vendor: v.optional(v.string()),

@@ -2,7 +2,7 @@ import { ConvexError, v } from "convex/values";
 import { mutation, query } from "../_generated/server";
 import { supportAgent } from "../system/ai/agents/supportAgent";
 import { MessageDoc, saveMessage } from "@convex-dev/agent";
-import { components } from "../_generated/api";
+import { components, internal } from "../_generated/api";
 import { paginationOptsValidator } from "convex/server";
 
 export const getMany = query({
@@ -109,10 +109,15 @@ export const create = mutation({
 
         if(!session || session.expiresAt < Date.now()) {
             throw new ConvexError({
-                code: "UNAUTHORIZED",
+            code: "UNAUTHORIZED",
                 message: "Invalid session",
             })
         }
+
+        //This refreshes the user's session if they are within the threshold
+        await ctx.runMutation(internal.system.contactSessions.refresh, {
+                contactSessionId: args.contactSessionId
+        })
 
         const widgetSettings = await ctx.db
          .query("widgetSettings")
