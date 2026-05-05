@@ -3,7 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "@workspace/ui/styles/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@workspace/ui/lib/utils";
-// import { TooltipProvider } from "@workspace/ui/components/tooltip";
+import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { Toaster } from "@workspace/ui/components/sonner"
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'})
@@ -33,10 +33,10 @@ export default function RootLayout({
          }}
         >
           <ThemeProvider>
-            {/* <TooltipProvider> */}
+            <TooltipProvider>
               <Toaster/>
               {children}
-            {/* </TooltipProvider> */}
+            </TooltipProvider>
             </ThemeProvider>
         </ClerkProvider>
       </body>

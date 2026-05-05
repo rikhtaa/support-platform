@@ -1,21 +1,19 @@
+import { PremiumFeatureOverlay } from "@/modules/billing/ui/components/premium-feature-overlay"
 import { CustomizationView } from "@/modules/customization/ui/views/customization-view"
-import { PremiumFeaturedOverlay } from "./premium-feature-overlay"
-import { Protect } from "@clerk/nextjs"
-const Page = () => {
+import { auth } from "@clerk/nextjs/server"
+
+const Page = async () => {
+  const { has } = await auth()
+
+  const isPro = has({plan: "pro"})
+  if(!isPro) {
   return (
-    <Protect
-        plan="pro"
-        // condition={(has) => has({plan: "Pro"})}
-        feedback={
-        <PremiumFeaturedOverlay>
+        <PremiumFeatureOverlay>
           <CustomizationView/>
-          
-        </PremiumFeaturedOverlay>
-        }
-        >
-          <CustomizationView/>
-      </Protect>
+        </PremiumFeatureOverlay>
   )
+ }
+  return <CustomizationView/>
 }
 
 export default Page

@@ -1,21 +1,19 @@
-"use client"
-import { Protect } from "@clerk/nextjs"
 import { VapiView } from "../../../../modules/plugins/ui/views/vapi-view"
-import { PremiumFeaturedOverlay } from "@/modules/billing/ui/components/premium-feature-overlay"
+import { PremiumFeatureOverlay } from "@/modules/billing/ui/components/premium-feature-overlay"
+import { auth } from "@clerk/nextjs/server"
 
-const Page = () => {
+const Page = async () => {
+  const { has } = await auth()
+
+  const isPro = has({plan: "pro"})
+  if(!isPro) {
   return (
-   <Protect
-      plan="pro"
-      // condition={(has) => has({plan: "Pro"})}
-      feedback={
-      <PremiumFeaturedOverlay>
-       <VapiView/>     
-      </PremiumFeaturedOverlay>
-      }
-    >
-      <VapiView/>
-    </Protect>
+        <PremiumFeatureOverlay>
+          <VapiView/>
+        </PremiumFeatureOverlay>
+  )
+ }
+  return <VapiView/>
 }
 
 export default Page

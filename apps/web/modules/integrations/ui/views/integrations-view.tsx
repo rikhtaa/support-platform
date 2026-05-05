@@ -95,6 +95,7 @@ export const IntegrationsView = () => {
                         <Image
                           alt={integration.title}
                           height={32}
+                          width={32}
                           src={integration.icon}
                         />
                         <p>{integration.title}</p>
