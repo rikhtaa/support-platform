@@ -144,7 +144,7 @@ export const IntegrationsDialog = ({
                     </div>
                     <div className="group relative">
                         <pre className="max-h-75 overflow-x-auto overflow-y-auto whitespace-pre-wrap
-                          break-all rounded-md bg-background p-2 font-mono text-secondary text-sm">
+                          break-all rounded-md bg-foreground p-2 font-mono text-secondary text-sm">
                           {snippet}
                         </pre>
                         <Button
