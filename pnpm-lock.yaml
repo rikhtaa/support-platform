@@ -235,6 +235,9 @@ importers:
       convex-helpers:
         specifier: ^0.1.115
         version: 0.1.115(@standard-schema/spec@1.1.0)(convex@1.36.1(react@19.2.4))(hono@4.12.9)(react@19.2.4)(typescript@6.0.3)(zod@3.25.76)
+      svix:
+        specifier: ^1.92.2
+        version: 1.92.2
       zod:
         specifier: 3.25.76
         version: 3.25.76
@@ -6658,6 +6661,9 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  svix@1.92.2:
+    resolution: {integrity: sha512-ZmuA3UVvlnF9EgxlzmPtF7CKjQb64Z6OFlyfdDfU0sdcC7dJa+3aOYX5B9mA+RS6ch1AxBa4UP/l6KmqfGtWBQ==}
 
   swap-case@1.1.2:
     resolution: {integrity: sha512-BAmWG6/bx8syfc6qXPprof3Mn5vQgf5dwdUNJhsNqU9WdPt5P+ES/wQ5bxfijy8zwZgZZHslC3iAsxsuQMCzJQ==}
@@ -13933,6 +13939,10 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  svix@1.92.2:
+    dependencies:
+      standardwebhooks: 1.0.0
 
   swap-case@1.1.2:
     dependencies:
