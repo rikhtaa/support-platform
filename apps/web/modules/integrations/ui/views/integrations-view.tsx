@@ -46,13 +46,12 @@ export const IntegrationsView = () => {
       snippet={selectedSnippet}
     />
     <div className="flex min-h-screen flex-col bg-muted p-8">
-            <div className="mx-auto w-full max-w-3xl">
+            <div className="mx-auto w-full max-w-screen-md">
                 <div className="space-y-2">
                     <h1 className="text-2xl md:text-4xl">Setup & Integrations</h1>
                     <p className="text-muted-foreground">
                         Choose the integration that&apos;s right for you
                     </p>
-                </div>
             </div>
             <div className="mt-8 space-y-6">
                 <div className="flex items-center gap-4">
@@ -85,7 +84,7 @@ export const IntegrationsView = () => {
                        Add the following code to your website to enable the chatbox. 
                     </p>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mdLgrid-cols-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                   {INTEGRATIONS.map((integration) => (
                     <button
                       key={integration.id}
@@ -101,6 +100,7 @@ export const IntegrationsView = () => {
                         <p>{integration.title}</p>
                     </button>
                   ))}
+                </div>
                 </div>
             </div>
     </div>
