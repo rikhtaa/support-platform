@@ -18,7 +18,7 @@ import { chatBubbleIcon, closeIcon } from './icons';
     position = (currentScript.getAttribute('data-position') as 'bottom-right' | 'bottom-left') || EMBED_CONFIG.DEFAULT_POSITION;
   } else {
     // Fallback: find script tag by src
-    const scripts = document.querySelectorAll('script[src*="embed"]');
+    const scripts = document.querySelectorAll('script[src*="widget"]');
     const embedScript = Array.from(scripts).find(script => 
       script.hasAttribute('data-organization-id')
     ) as HTMLScriptElement;
