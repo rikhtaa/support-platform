@@ -12,30 +12,26 @@ import { chatBubbleIcon, closeIcon } from './icons';
   let position: 'bottom-right' | 'bottom-left' = EMBED_CONFIG.DEFAULT_POSITION;
 
   // Try to get the current script
-  const currentScript = document.currentScript as HTMLScriptElement;
-  if (currentScript) {
-    organizationId = currentScript.getAttribute('data-organization-id');
-    position = (currentScript.getAttribute('data-position') as 'bottom-right' | 'bottom-left') || EMBED_CONFIG.DEFAULT_POSITION;
-  } else {
-    // Fallback: find script tag by src
-    const scripts = document.querySelectorAll('script[src*="widget"]');
-    const embedScript = Array.from(scripts).find(script =>
-      script.hasAttribute('data-organization-id')
-    ) as HTMLScriptElement;
+  const embedScript =
+  document.currentScript as HTMLScriptElement ||
+  document.querySelector('script[data-organization-id]:not([data-echo-initialized])');
 
-    if (embedScript) {
-      organizationId = embedScript.getAttribute('data-organization-id');
-      position = (embedScript.getAttribute('data-position') as 'bottom-right' | 'bottom-left') || EMBED_CONFIG.DEFAULT_POSITION;
-    }
+  if (!embedScript) {
+    console.error('Echo Widget: script tag not found');
+    return;
   }
 
-  // Exit if no organization ID
+  organizationId = embedScript.dataset.organizationId;
+  embedScript.setAttribute('data-echo-initialized', 'true');
+
   if (!organizationId) {
-    console.log("currentScript", currentScript);
-    console.log("organizationId", organizationId);
     console.error('Echo Widget: data-organization-id attribute is required');
     return;
   }
+
+  position =
+    (embedScript.dataset.position as 'bottom-right' | 'bottom-left') ||
+    EMBED_CONFIG.DEFAULT_POSITION;
 
   function init() {
     if (document.readyState === 'loading') {
