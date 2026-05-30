@@ -20,7 +20,6 @@ export const INTEGRATIONS = [
         icon: "/languages/javascript.svg"
     }
 ]
-
 export type IntegrationId = (typeof INTEGRATIONS)[number]["id"]
 
 export const HTML_SCRIPT = `<script src="https://support-platform-widget-lime.vercel.app/widget.js"
