@@ -51,7 +51,9 @@ export const WidgetVoiceScreen = () => {
         {transcript.length > 0 ? (
         <AIConversation className="h-full">
           <AIConversationContent>
-            {transcript.map((message, index) => (
+            {transcript
+              .filter((message) => message.text.trim().length > 0)
+              .map((message, index) => (
               <AIMessage
                 from={message.role}
                 key={`${message.role}-${index}-${message.text}`}
