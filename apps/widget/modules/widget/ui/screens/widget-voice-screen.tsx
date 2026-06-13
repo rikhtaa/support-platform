@@ -24,97 +24,97 @@ const formSchema = z.object({
 })
 
 export const WidgetVoiceScreen = () => {
-    const setScreen = useSetAtom(screenAtom)
-    const {
-      isConnected,
-      isSpeaking,
-      transcript,
-      startCall,
-      endCall,
-      isConnecting
-    } = useVapi()
+  const setScreen = useSetAtom(screenAtom)
+  const {
+    isConnected,
+    isSpeaking,
+    transcript,
+    startCall,
+    endCall,
+    isConnecting
+  } = useVapi()
 
-    return (
-      <>
-        <WidgetHeader>
-           <div className="flex items-center gap-x-2">
-              <Button
-                 variant="transparent"
-                 size="icon"
-                 onClick={() => setScreen("selection")}
-               >
-                <ArrowLeftIcon/>
-              </Button>
-              <p>Voice Chat</p>
-            </div>
-        </WidgetHeader>
-        {transcript.length > 0 ? (
+  return (
+    <>
+      <WidgetHeader>
+        <div className="flex items-center gap-x-2">
+          <Button
+            variant="transparent"
+            size="icon"
+            onClick={() => setScreen("selection")}
+          >
+            <ArrowLeftIcon />
+          </Button>
+          <p>Voice Chat</p>
+        </div>
+      </WidgetHeader>
+      {transcript.length > 0 ? (
         <AIConversation className="h-full">
           <AIConversationContent>
             {transcript
-              .filter((message) => message.text.trim().length > 0)
+              .filter((message) => message.text && message.text.trim().length > 0)
               .map((message, index) => (
-              <AIMessage
-                from={message.role}
-                key={`${message.role}-${index}-${message.text}`}
-              >
-                <AIMessageContent>
-                  {message.text}
-                </AIMessageContent>
-              </AIMessage>
-            ))}
+                <AIMessage
+                  from={message.role}
+                  key={`${message.role}-${index}-${message.text}`}
+                >
+                  <AIMessageContent>
+                    {message.text}
+                  </AIMessageContent>
+                </AIMessage>
+              ))}
           </AIConversationContent>
-          <AIConversationScrollButton/>
+          <AIConversationScrollButton />
         </AIConversation>
-        ) : (
+      ) : (
         <div className="flex flex-1 h-full flex-col items-center justify-center gap-y-4">
           <div className="flex items-center rounded-full border bg-white p-3">
-            <MicIcon className="size-6 text-muted-foreground"/>
+            <MicIcon className="size-6 text-muted-foreground" />
           </div>
           <p className="text-muted-foreground">Transscript will appear here</p>
         </div>
-        )}
-        <div className="border-t bg-background p-4">
-          <div className="flex flex-col items-center gap-y-4">
-            {isConnected && (
+      )}
+      <div className="border-t bg-background p-4">
+        <div className="flex flex-col items-center gap-y-4">
+          {isConnected && (
             <div className="flex items-center gap-y-2">
               <div className={cn(
                 "size-4 rounded-full",
-                 isSpeaking ? "animate-pulse bg-red-500" : "bg-green-500"
-              )}/>
-                <span className="text-muted-foreground text-sm">
-                  {isSpeaking ? "Assistant Speaking..." : "Listening..."}
-                </span>
+                isSpeaking ? "animate-pulse bg-red-500" : "bg-green-500"
+              )} />
+              <span className="text-muted-foreground text-sm">
+                {isSpeaking ? "Assistant Speaking..." : "Listening..."}
+              </span>
             </div>
-            )}
-            <div className="flex w-full justify-center">
-              {isConnected ? (
-                <Button
-                  className="w-full"
-                  size="lg"
-                  variant="destructive"
-                  onClick={() => endCall()}
-                >
-                  <MicOffIcon/>
-                  End call
-                </Button>
-              ) : (
-                <Button
-                  className="w-full"
-                  disabled={isConnecting}
-                  size="lg"
-                  onClick={() => startCall()}
-                >
-                  <MicIcon/>
-                  Start call
-                </Button>
-              )
+          )}
+          <div className="flex w-full justify-center">
+            {isConnected ? (
+              <Button
+                className="w-full"
+                size="lg"
+                variant="destructive"
+                onClick={() => endCall()}
+              >
+                <MicOffIcon />
+                End call
+              </Button>
+            ) : (
+              <Button
+                className="w-full"
+                disabled={isConnecting}
+                size="lg"
+                onClick={() => startCall()}
+              >
+                <MicIcon />
+                Start call
+              </Button>
+            )
 
-              }
-            </div>
+            }
           </div>
         </div>
-        <WidgetFooter/>
-      </>
-    )
+      </div>
+      <WidgetFooter />
+    </>
+  )
 }
