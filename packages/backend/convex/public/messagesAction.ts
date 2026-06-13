@@ -74,7 +74,7 @@ export const create = action({
                     resolveConversation,
                     escalateConversation,
                     search
-                }
+                },
             }
         )}else{
             await saveMessage(ctx, components.agent, {
