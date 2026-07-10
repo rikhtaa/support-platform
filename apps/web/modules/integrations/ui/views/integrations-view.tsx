@@ -7,7 +7,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Separator } from "@workspace/ui/components/separator"
 import { CopyIcon } from "lucide-react"
 import { toast } from "sonner"
-import { IntegrationId, INTEGRATIONS } from "../../constants"
+import { IntegrationId, INTEGRATIONS, INTEGRATION_STEPS } from "../../constants"
 import Image from "next/image"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
 import { useState } from "react"
@@ -16,6 +16,7 @@ import { createSnippet } from "../../utils"
 export const IntegrationsView = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedSnippet, setSelectedSnippet] = useState("")
+  const [selectedIntegrationId, setSelectedIntegrationId] = useState<IntegrationId | null>(null)
   const { organization } = useOrganization()
 
  const handleIntegrationClick = (integrationId: IntegrationId) => {
@@ -26,6 +27,7 @@ export const IntegrationsView = () => {
 
    const snippet = createSnippet(integrationId, organization.id)
    setSelectedSnippet(snippet)
+   setSelectedIntegrationId(integrationId)
    setDialogOpen(true)
    
  }
@@ -44,6 +46,7 @@ export const IntegrationsView = () => {
       open={dialogOpen}
       onOpenChange={setDialogOpen}
       snippet={selectedSnippet}
+      integrationId={selectedIntegrationId}
     />
     <div className="flex min-h-screen flex-col bg-muted p-8">
             <div className="mx-auto w-full max-w-screen-md">
@@ -112,11 +115,13 @@ export const IntegrationsView = () => {
 export const IntegrationsDialog = ({
     open,
     onOpenChange,
-    snippet
+    snippet,
+    integrationId
 }: {
     open: boolean
     onOpenChange: (value: boolean) => void
     snippet: string
+    integrationId: IntegrationId | null
 }) => {
     const handleCopy = async () => { 
      try {
@@ -126,6 +131,8 @@ export const IntegrationsDialog = ({
         toast.error("Failed to copy to clipboard")
      }
     }
+
+    const steps = integrationId ? INTEGRATION_STEPS[integrationId] : []
 
     return (
        <Dialog open={open} onOpenChange={onOpenChange}>
@@ -159,11 +166,19 @@ export const IntegrationsDialog = ({
                 </div>
                 <div className="space-y-2">
                     <div className="rounded-md bg-accent p-2 text-sm">
-                        2. Add the code in your page
+                        2. Add the code to your site
                     </div>
-                    <p className="text-muted-foreground text-sm">
-                        Paste the chatbox code above in your page. You can add it in the HTML head section.
-                    </p>
+                    {steps.length > 1 ? (
+                        <ol className="list-decimal space-y-1 pl-4 text-muted-foreground text-sm">
+                            {steps.map((step, index) => (
+                                <li key={index}>{step}</li>
+                            ))}
+                        </ol>
+                    ) : (
+                        <p className="text-muted-foreground text-sm">
+                            {steps[0]}
+                        </p>
+                    )}
                 </div>
             </div>
          </DialogContent>

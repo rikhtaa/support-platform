@@ -3,7 +3,8 @@ import {
     type IntegrationId,
     JAVASCRIPT_SCRIPT,
     NEXTJS_SCRIPT,
-    REACT_SCRIPT
+    REACT_SCRIPT,               
+    WORDPRESS_SCRIPT
 } from "./constants"
 
 export const createSnippet = (integrationId: IntegrationId, organizationId: string) => {
@@ -18,6 +19,9 @@ export const createSnippet = (integrationId: IntegrationId, organizationId: stri
     }
     if(integrationId === "javascript") {
         return JAVASCRIPT_SCRIPT.replace("{{ORGANIZATION_ID}}", organizationId)
+    }
+    if(integrationId === "wordpress") {
+        return WORDPRESS_SCRIPT.replace("{{ORGANIZATION_ID}}", organizationId)
     }
     return ""
 }
