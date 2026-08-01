@@ -1,7 +1,7 @@
 "use client"
 
 import { useAtomValue } from "jotai"
-import type { CSSProperties } from "react"
+import { useEffect, type CSSProperties } from "react"
 import { WidgetAuthScreen } from "@/modules/widget/ui/screens/widget-auth-screen"
 import { screenAtom, widgetSettingsAtom } from "@/modules/widget/atoms/widget-atoms"
 import { WidgetErrorScreen } from "@/modules/widget/ui/screens/widget-error-screen"
@@ -28,6 +28,17 @@ export const WidgetView = ({organizationId}: Props) => {
           "--primary-foreground": getReadableForeground(primaryColor),
         } as CSSProperties)
       : undefined
+
+    useEffect(() => {
+      if (typeof window === "undefined" || window.parent === window) {
+        return
+      }
+
+      window.parent.postMessage(
+        { type: "branding", payload: { primaryColor: primaryColor || null } },
+        "*"
+      )
+    }, [primaryColor])
 
     const screenComponents = {
       loading: <WidgetLoadingScreen organizationId={organizationId} />,
