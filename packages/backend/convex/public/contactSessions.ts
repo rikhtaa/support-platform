@@ -4,8 +4,8 @@ import { SESSION_DURATION_MS } from "../constants";
 
 export const create = mutation({
   args: {
-    name: v.string(),
-    email: v.string(),
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
     organizationId: v.string(),
     metadata: v.optional(v.object({
       userAgent: v.optional(v.string()),

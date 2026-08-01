@@ -48,8 +48,8 @@ export default defineSchema({
    .index("by_thread_id", ["threadId"])
    .index("by_status_and_organization_id", ["status","organizationId"]) ,
   contactSessions: defineTable({
-    name: v.string(),
-    email: v.string(),
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
     organizationId: v.string(),
     expiresAt: v.number(),
     metadata: v.optional(v.object({

@@ -20,8 +20,8 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { contactSessionIdAtomFamily, organizationIdAtom, screenAtom } from "../../atoms/widget-atoms";
 
 const formSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  email: z.string().email("Invalid email address"),
+  name: z.string().optional(),
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
 })
  
 export const WidgetAuthScreen = () => {
@@ -71,6 +71,10 @@ export const WidgetAuthScreen = () => {
     setScreen("selection")
 
   };
+
+  const handleSkip = () => {
+    onSubmit({ name: "", email: "" })
+  }
 
   return (
     <>
@@ -123,6 +127,15 @@ export const WidgetAuthScreen = () => {
           type="submit"
         >
           Continue
+        </Button>
+         <Button
+          disabled={form.formState.isSubmitting}
+          onClick={handleSkip}
+          size="lg"
+          type="button"
+          variant="outline"
+        >
+          Skip and start chatting
         </Button>
         </form>
      </Form>
