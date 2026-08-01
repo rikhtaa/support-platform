@@ -56,6 +56,10 @@ export const CustomizationForm = ({
         assistantId: initialData?.vapiSettings.assistantId || "",
         phoneNumber: initialData?.vapiSettings.phoneNumber || "",
       },
+      branding: {
+        primaryColor: initialData?.branding?.primaryColor || "",
+        logoUrl: initialData?.branding?.logoUrl || "",
+      },
     },
   });
 
@@ -72,10 +76,16 @@ export const CustomizationForm = ({
             : values.vapiSettings.phoneNumber,
       };
 
+      const branding: WidgetSettings["branding"] = {
+        primaryColor: values.branding.primaryColor || undefined,
+        logoUrl: values.branding.logoUrl || undefined,
+      };
+
       await upsertWidgetSettings({
         greetMessage: values.greetMessage,
         defaultSuggestions: values.defaultSuggestions,
         vapiSettings,
+        branding,
       });
 
       toast.success("Widget settings saved");
@@ -181,6 +191,58 @@ export const CustomizationForm = ({
                 </div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Branding</CardTitle>
+            <CardDescription>
+              Match the chat widget to your school&apos;s look and feel
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <FormField
+              control={form.control}
+              name="branding.primaryColor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Primary Color</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-x-3">
+                      <input
+                        type="color"
+                        className="h-9 w-9 shrink-0 cursor-pointer rounded border"
+                        value={field.value || "#2563EB"}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                      <Input {...field} placeholder="#2563EB" className="max-w-40" />
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Used for the chat header and accent elements
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="branding.logoUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Logo URL</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="https://example.com/logo.png" />
+                  </FormControl>
+                  <FormDescription>
+                    Shown in the chat header. Leave blank to use the default icon
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 

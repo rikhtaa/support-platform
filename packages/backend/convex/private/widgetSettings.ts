@@ -13,6 +13,10 @@ export const upsert = mutation({
       assistantId: v.optional(v.string()),
       phoneNumber: v.optional(v.string()),
     }),
+    branding: v.optional(v.object({
+      primaryColor: v.optional(v.string()),
+      logoUrl: v.optional(v.string()),
+    })),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -43,6 +47,7 @@ export const upsert = mutation({
         greetMessage: args.greetMessage,
         defaultSuggestions: args.defaultSuggestions,
         vapiSettings: args.vapiSettings,
+        branding: args.branding,
       });
     } else {
       await ctx.db.insert("widgetSettings", {
@@ -50,6 +55,7 @@ export const upsert = mutation({
         greetMessage: args.greetMessage,
         defaultSuggestions: args.defaultSuggestions,
         vapiSettings: args.vapiSettings,
+        branding: args.branding,
       });
     }
   },

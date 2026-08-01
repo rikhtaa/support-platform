@@ -19,6 +19,10 @@ export default defineSchema({
       assistantId: v.optional(v.string()),
       phoneNumber: v.optional(v.string()),
     }),
+    branding: v.optional(v.object({
+      primaryColor: v.optional(v.string()), 
+      logoUrl: v.optional(v.string()),      
+    })),
   })
   .index("by_organization_id", ["organizationId"]),
   plugins: defineTable({
