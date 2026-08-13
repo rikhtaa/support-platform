@@ -8,8 +8,9 @@
 
   const VALID_POSITIONS = ["bottom-right", "bottom-left", "top-right", "top-left"];
 
-  // Neutral fallback so the button is visible before any branding arrives.
-  const NEUTRAL_BUTTON_BG = "#18181b";
+  // Skeleton launcher colors, used only until the widget posts branding.
+  const SKELETON_BG = "#e4e4e7";       // zinc-200
+  const SKELETON_PULSE_BG = "#d4d4d8"; // zinc-300, the "lit" end of the pulse
 
   const CHAT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -20,6 +21,24 @@
     <line x1="6" y1="6" x2="18" y2="18"></line>
   </svg>`;
 
+  // Injected once, so the skeleton circle can pulse via a keyframe animation.
+  const STYLE_ID = "echo-widget-styles";
+  function injectStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    const style = document.createElement("style");
+    style.id = STYLE_ID;
+    style.textContent = `
+      @keyframes echo-widget-pulse {
+        0%, 100% { background: ${SKELETON_BG}; }
+        50% { background: ${SKELETON_PULSE_BG}; }
+      }
+      #echo-widget-button.echo-widget-skeleton {
+        animation: echo-widget-pulse 1.5s ease-in-out infinite;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   (function () {
     let iframe = null;
     let container = null;
@@ -28,9 +47,12 @@
     let organizationId = null;
     let position = CONFIG.DEFAULT_POSITION;
 
-    // No default brand color: stays null until the widget posts one.
+    // No default brand color: null until the widget posts one.
     let currentColor = null;
     let currentName = "Chat";
+    // Tracks whether real branding has arrived. Until it does, the
+    // button stays in its skeleton (pulsing, icon-less) state.
+    let hasBranding = false;
 
     function getScript() {
       return (
@@ -95,19 +117,38 @@
       return `${red}, ${green}, ${blue}`;
     }
 
+    // Puts the button into its pre-branding skeleton state: a pulsing
+    // gray circle with no icon.
+    function applySkeleton() {
+      if (!button) return;
+      button.classList.add("echo-widget-skeleton");
+      button.style.background = SKELETON_BG;
+      button.style.boxShadow = "none";
+      button.innerHTML = "";
+    }
+
     function applyBranding() {
       if (!button) return;
 
-      // Until a custom color is posted, use the neutral fallback and no glow.
-      if (!currentColor) {
-        button.style.background = NEUTRAL_BUTTON_BG;
-        button.style.boxShadow = "none";
+      // Still waiting on branding — keep the skeleton, don't draw the icon.
+      if (!hasBranding) {
+        applySkeleton();
         return;
       }
 
-      const rgb = hexToRgbString(currentColor);
-      button.style.background = currentColor;
-      button.style.boxShadow = rgb ? `0 4px 24px rgba(${rgb}, 0.35)` : "none";
+      // Branding has arrived: stop pulsing, restore the icon, apply color.
+      button.classList.remove("echo-widget-skeleton");
+      if (!isOpen) button.innerHTML = CHAT_ICON;
+
+      if (currentColor) {
+        const rgb = hexToRgbString(currentColor);
+        button.style.background = currentColor;
+        button.style.boxShadow = rgb ? `0 4px 24px rgba(${rgb}, 0.35)` : "none";
+      } else {
+        // Branding message arrived but with no color — neutral, no glow.
+        button.style.background = "#18181b";
+        button.style.boxShadow = "none";
+      }
     }
 
     function applyName() {
@@ -122,11 +163,12 @@
     }
 
     function render() {
+      injectStyles();
+
       const positionStyles = getPositionStyles(position);
 
       button = document.createElement("button");
       button.id = "echo-widget-button";
-      button.innerHTML = CHAT_ICON;
       button.style.cssText = `
         position: fixed;
         ${positionStyles.button}
@@ -142,7 +184,8 @@
         justify-content: center;
         transition: all 0.2s ease;
       `;
-      applyBranding();
+      // Start in skeleton state until branding arrives.
+      applySkeleton();
       applyName();
 
       button.addEventListener("click", toggleWidget);
@@ -207,15 +250,15 @@
           }
           break;
         case "branding":
-          // Only apply what the widget actually sends; a null color
-          // clears back to the neutral fallback.
+          // First branding message ends the skeleton state, whether or
+          // not a color was set — the widget has loaded either way.
+          hasBranding = true;
           currentColor = payload && payload.primaryColor ? payload.primaryColor : null;
-          applyBranding();
-
           if (payload && payload.chatbotName) {
             currentName = payload.chatbotName;
-            applyName();
           }
+          applyBranding();
+          applyName();
           break;
       }
     }
@@ -234,7 +277,8 @@
           container.style.transform = "translateY(0)";
         }
       }, 10);
-      button.innerHTML = CLOSE_ICON;
+      // Only show the close icon once we're past the skeleton state.
+      if (hasBranding) button.innerHTML = CLOSE_ICON;
     }
 
     function closeWidget() {
@@ -245,7 +289,6 @@
       setTimeout(() => {
         if (container) container.style.display = "none";
       }, 300);
-      button.innerHTML = CHAT_ICON;
       applyBranding();
     }
 
@@ -261,6 +304,8 @@
         button = null;
       }
       isOpen = false;
+      hasBranding = false;
+      currentColor = null;
     }
 
     function reinit(options) {
