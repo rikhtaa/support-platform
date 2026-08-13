@@ -6,6 +6,7 @@ import { resolveConversation } from "../system/ai/tools/resolveConversation";
 import { escalateConversation } from "../system/ai/tools/escalateConversation";
 import { saveMessage } from "@convex-dev/agent";
 import { search } from "../system/ai/tools/search";
+import { isRateLimitError } from "../lib/errors";
 
 export const create = action({
     args: {
@@ -65,18 +66,33 @@ export const create = action({
           conversation.status === "unresolved" && subscription?.status === "active"
 
         if(shouldTriggerAgent){
-         await supportAgent.generateText(
-            ctx,
-            { threadId: args.threadId },
-            {
-                prompt: args.prompt,
-                tools: {
-                    resolveConversation,
-                    escalateConversation,
-                    search
+         try {
+           await supportAgent.generateText(
+              ctx,
+              { threadId: args.threadId },
+              {
+                  prompt: args.prompt,
+                  tools: {
+                      resolveConversation,
+                      escalateConversation,
+                      search
+                  },
+              }
+          )
+         } catch (error) {
+            const rateLimited = isRateLimitError(error);
+
+            await saveMessage(ctx, components.agent, {
+                threadId: args.threadId,
+                message: {
+                    role: "assistant",
+                    content: rateLimited
+                        ? "Our assistant has reached its usage limit for right now. Please try again shortly, or use the Contact Us option if this is urgent."
+                        : "Something went wrong while processing that message. Please try again in a moment, or use the Contact Us option if this keeps happening.",
                 },
-            }
-        )}else{
+            });
+         }
+        }else{
             await saveMessage(ctx, components.agent, {
                 threadId: args.threadId,
                 prompt: args.prompt

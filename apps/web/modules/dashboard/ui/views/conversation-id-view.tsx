@@ -82,7 +82,6 @@ export const ConversationIdView = ({
       form.setValue("message", response)
     }catch(error){
       toast.error("something went wrong")
-      console.log(error)
     }finally{
         setIsEnhanching(false)
     }

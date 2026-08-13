@@ -45,6 +45,7 @@ export const CustomizationForm = ({
   const form = useForm<FormSchema>({
     resolver: zodResolver(widgetSettingsSchema),
     defaultValues: {
+      chatbotName: initialData?.chatbotName || "",
       greetMessage:
         initialData?.greetMessage || "Hi! How can I help you today?",
       defaultSuggestions: {
@@ -82,6 +83,7 @@ export const CustomizationForm = ({
       };
 
       await upsertWidgetSettings({
+        chatbotName: values.chatbotName || undefined,
         greetMessage: values.greetMessage,
         defaultSuggestions: values.defaultSuggestions,
         vapiSettings,
@@ -106,6 +108,23 @@ export const CustomizationForm = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <FormField
+              control={form.control}
+              name="chatbotName"
+              render={({ field }) => (
+               <FormItem>
+                <FormLabel>Chatbot Name</FormLabel>
+                 <FormControl>
+                  <Input {...field} placeholder="e.g., Customer Support" />
+                 </FormControl>
+                 <FormDescription>
+                   Used for accessibility labels and the assistant's identity in the widget
+                 </FormDescription>
+                <FormMessage />
+               </FormItem>
+              )}
+            />
+            <Separator />
             <FormField
               control={form.control}
               name="greetMessage"

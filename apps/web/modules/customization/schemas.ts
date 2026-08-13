@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const widgetSettingsSchema = z.object({
+  chatbotName: z.string().optional().or(z.literal("")),
   greetMessage: z.string().min(1, "Greeting message is required"),
   defaultSuggestions: z.object({
     suggestion1: z.string().optional(),

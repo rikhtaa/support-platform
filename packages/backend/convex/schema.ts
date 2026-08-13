@@ -9,6 +9,7 @@ export default defineSchema({
     .index("by_organization_id", ["organizationId"]),
    widgetSettings: defineTable({
     organizationId: v.string(),
+    chatbotName: v.optional(v.string()),
     greetMessage: v.string(),
     defaultSuggestions: v.object({
       suggestion1: v.optional(v.string()),
@@ -72,4 +73,28 @@ export default defineSchema({
   users: defineTable({
     name: v.string(),
   }),
+  docsSyncRuns: defineTable({
+    organizationId: v.string(),
+    status: v.union(
+      v.literal("running"),
+      v.literal("completed"),
+      v.literal("failed"),
+      v.literal("cancelled"),
+    ),
+    files: v.array(v.string()),
+    cursor: v.number(),
+    added: v.number(),
+    updatedOrUnchanged: v.number(),
+    failed: v.number(),
+    consecutiveFailures: v.number(),
+    errorLog: v.array(v.object({
+      path: v.string(),
+      message: v.string(),
+    })),
+    startedAt: v.number(),
+    completedAt: v.optional(v.number()),
+    lastError: v.optional(v.string()),
+  })
+    .index("by_organization_id", ["organizationId"])
+    .index("by_organization_id_and_status", ["organizationId", "status"])
 });

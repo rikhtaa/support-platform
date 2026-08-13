@@ -6,10 +6,10 @@ const voyage = createVoyage({
     apiKey: process.env.VOYAGE_API_KEY,
 });
 
-const rag = new RAG(components.rag, {
-    textEmbeddingModel: voyage.embeddingModel("voyage-3-lite"),
-    embeddingDimension: 512
-})
+    const rag = new RAG(components.rag, {
+        textEmbeddingModel: voyage.embeddingModel("voyage-4-lite"),
+        embeddingDimension: 1024
+    })
 
 
 export default rag

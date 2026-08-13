@@ -13,6 +13,7 @@ export const WidgetHeader = ({
 }) => {
     const widgetSettings = useAtomValue(widgetSettingsAtom)
     const logoUrl = widgetSettings?.branding?.logoUrl
+    const chatbotName = widgetSettings?.chatbotName
 
     return (
         <header className={cn(
@@ -23,7 +24,7 @@ export const WidgetHeader = ({
           {logoUrl && (
             <img
                 src={logoUrl}
-                alt="Logo"
+                alt={chatbotName ? `${chatbotName} logo` : "Logo"}
                 className="absolute top-3 right-3 size-8 rounded-full border border-white/40 bg-white object-contain p-0.5"
             />
          )}

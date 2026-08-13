@@ -4,11 +4,7 @@ import z from "zod"
 import { internal } from "../../../_generated/api";
 import rag from "../rag";
 import { SEARCH_INTERPRETER_PROMPT } from "../constants";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-
-const openrouter = createOpenRouter({
-    apiKey: process.env.OPENROUTER_API_KEY,
-});
+import { groq } from "@ai-sdk/groq";
 
 export const search = createTool({
     description: "Search the knowledge base for relevant information to help answer user questions",
@@ -46,14 +42,11 @@ export const search = createTool({
                     { role: "system", content: SEARCH_INTERPRETER_PROMPT },
                     { role: "user", content: `User asked: "${args.query}\n\nSearch results: ${contextText}` },
                 ],
-                model: openrouter("openrouter/free")
+                model: groq("openai/gpt-oss-20b")
             })
 
             return response.text
         } catch (error: any) {
-            console.log("=== SEARCH TOOL ERROR ===")
-            console.log("error message:", error?.message)
-            console.log("error stack:", error?.stack)
             return `Search failed: ${error?.message}`
         }
     }

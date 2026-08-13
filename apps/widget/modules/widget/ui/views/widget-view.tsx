@@ -21,6 +21,7 @@ export const WidgetView = ({organizationId}: Props) => {
     const screen = useAtomValue(screenAtom)
     const widgetSettings = useAtomValue(widgetSettingsAtom)
     const primaryColor = widgetSettings?.branding?.primaryColor
+    const chatbotName = widgetSettings?.chatbotName
 
     const brandStyle = primaryColor
       ? ({
@@ -35,10 +36,13 @@ export const WidgetView = ({organizationId}: Props) => {
       }
 
       window.parent.postMessage(
-        { type: "branding", payload: { primaryColor: primaryColor || null } },
+        { type: "branding", payload: { 
+            primaryColor: primaryColor || null,
+            chatbotName: chatbotName || null,
+         } },
         "*"
       )
-    }, [primaryColor])
+    }, [primaryColor, chatbotName])
 
     const screenComponents = {
       loading: <WidgetLoadingScreen organizationId={organizationId} />,

@@ -131,7 +131,7 @@ export const WidgetChatScreen = () => {
             >
               <ArrowLeftIcon/>
             </Button>
-            <p>Chat</p>
+            <p>{widgetSettings?.chatbotName || "Chat"}</p>
             </div>
             <Button
             size="icon"
@@ -148,27 +148,40 @@ export const WidgetChatScreen = () => {
               onLoadMore={handleLoadMore}
               ref={topElementRef}
             />
-             {toUIMessages(messages.results ?? [])?.map((message) =>{
-              return (
-                <AIMessage
-                 from={message.role === 'user' ? 'user' : 'assistant'}
-                 key={message.id}
-                >
-                  <AIMessageContent>
-                     <AIResponse> 
-                       {message.parts.filter(part => part.type === "text").map(part => part.text).join("")}
-                     </AIResponse>
-                  </AIMessageContent>
-                    {message.role === "assistant" && (
-                      <DicebearAvatar
-                        imageUrl={widgetSettings?.branding?.logoUrl || "/logo.svg"}
-                        seed="assistant"
-                        size={32}
-                      />
-                    )}
-                </AIMessage>
-              )
-             })}
+             {toUIMessages(messages.results ?? [])?.map((message) => {
+  const text = message.parts
+    .filter((part) => part.type === "text")
+    .map((part) => part.text)
+    .join("")
+
+  const isPending = message.role === "assistant" && text.trim() === ""
+
+  return (
+    <AIMessage
+      from={message.role === "user" ? "user" : "assistant"}
+      key={message.id}
+    >
+      <AIMessageContent>
+        {isPending ? (
+          <span className="flex items-center gap-1 py-1">
+            <span className="size-1.5 animate-bounce rounded-full bg-current opacity-60 [animation-delay:-0.3s]" />
+            <span className="size-1.5 animate-bounce rounded-full bg-current opacity-60 [animation-delay:-0.15s]" />
+            <span className="size-1.5 animate-bounce rounded-full bg-current opacity-60" />
+          </span>
+        ) : (
+          <AIResponse>{text}</AIResponse>
+        )}
+      </AIMessageContent>
+      {message.role === "assistant" && (
+        <DicebearAvatar
+          imageUrl={widgetSettings?.branding?.logoUrl || "/logo.svg"}
+          seed="assistant"
+          size={32}
+        />
+      )}
+    </AIMessage>
+  )
+})}
            </AIConversationContent>
          </AIConversation>
          {toUIMessages(messages.results ?? [])?.length === 1 && (

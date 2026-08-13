@@ -195,6 +195,7 @@ export const list = query({
       namespace: orgId
     })
 
+
     if(!namespace){
       return { page: [], isDone: true, continueCursor: ""}
     }

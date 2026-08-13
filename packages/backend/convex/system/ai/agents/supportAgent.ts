@@ -5,17 +5,12 @@ import { search } from "../tools/search";
 import { escalateConversation } from "../tools/escalateConversation";
 import { resolveConversation } from "../tools/resolveConversation";
 import { SUPPORT_AGENT_PROMPT } from "../constants";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-
-
-const openrouter = createOpenRouter({
-    apiKey: process.env.OPENROUTER_API_KEY,
-});
 
 export const supportAgent = new Agent(components.agent, {
     name: "Support Agent",
-    languageModel: openrouter("openrouter/free"),
+    languageModel: groq("openai/gpt-oss-120b"),
     tools: { search, escalateConversation, resolveConversation },
     instructions: SUPPORT_AGENT_PROMPT,
     maxSteps: 5,
 })
+

@@ -5,9 +5,11 @@ import { supportAgent } from "../agents/supportAgent"
 
 
 export const resolveConversation = createTool({
-    description: "Resolve a conversation",
-    inputSchema: z.object({}),
-    execute: async (ctx) => {
+    description: "Mark the conversation as resolved once the customer confirms they need nothing further",
+    inputSchema: z.object({
+        reason: z.string().describe("Brief reason the conversation is being resolved"),
+    }),
+    execute: async (ctx, args) => {
         if(!ctx.threadId){
             return "Missing thread ID"
         }
