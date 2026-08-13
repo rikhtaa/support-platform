@@ -9,7 +9,7 @@ export const INTEGRATIONS = [
         title: "React",
         icon: "/languages/react.svg"
     },
-    {
+    {   
         id: "next.js",
         title: "Next.js",
         icon: "/languages/nextjs.svg"

@@ -7,6 +7,7 @@ import { escalateConversation } from "../system/ai/tools/escalateConversation";
 import { saveMessage } from "@convex-dev/agent";
 import { search } from "../system/ai/tools/search";
 import { isRateLimitError } from "../lib/errors";
+import { ENABLE_SUBSCRIPTION_CHECKS } from "../constants";
 
 export const create = action({
     args: {
@@ -55,15 +56,23 @@ export const create = action({
                 contactSessionId: args.contactSessionId
         })
 
+        if (ENABLE_SUBSCRIPTION_CHECKS) {
         const subscription = await ctx.runQuery(
             internal.system.subscriptions.getByOrganizationId,
-            {
-                organizationId: conversation.organizationId
-            } 
+            { organizationId: conversation.organizationId }
         )
+        
+        if (subscription?.status !== "active") {
+            throw new ConvexError({
+                code: "BAD_REQUEST",
+                message: "Missing subscription",
+            });
+        }
+        }
 
         const shouldTriggerAgent = 
-          conversation.status === "unresolved" && subscription?.status === "active"
+        //   conversation.status === "unresolved" && subscription?.status === "active"
+          conversation.status === "unresolved"
 
         if(shouldTriggerAgent){
          try {

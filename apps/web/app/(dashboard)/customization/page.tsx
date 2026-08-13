@@ -8,9 +8,9 @@ const Page = async () => {
   const isPro = has({plan: "pro"})
   if(!isPro) {
   return (
-        <PremiumFeatureOverlay>
+        // <PremiumFeatureOverlay>
           <CustomizationView/>
-        </PremiumFeatureOverlay>
+        // </PremiumFeatureOverlay>
   )
  }
   return <CustomizationView/>

@@ -57,13 +57,13 @@ const configurationItems = [
   },
 ];
 
-const accountItems = [
-  {
-    title: "Plans & Billing",
-    url: "/billing",
-    icon: CreditCardIcon,
-  },
-];
+// const accountItems = [
+//   {
+//     title: "Plans & Billing",
+//     url: "/billing",
+//     icon: CreditCardIcon,
+//   },
+// ];
 
 export const DashboardSidebar = () => {
   const pathname = usePathname();
@@ -155,7 +155,7 @@ export const DashboardSidebar = () => {
         </SidebarGroup>
 
         {/* Account */}
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -178,7 +178,7 @@ export const DashboardSidebar = () => {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>

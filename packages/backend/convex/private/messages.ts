@@ -7,46 +7,52 @@ import { saveMessage } from "@convex-dev/agent";
 import { components, internal } from "../_generated/api";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { OPERATOR_MESSAGE_ENHANCEMENT_PROMPT } from "../system/ai/constants";
+import { ENABLE_SUBSCRIPTION_CHECKS } from "../constants";
 
 const openrouter = createOpenRouter({
-    apiKey: process.env.OPENROUTER_API_KEY,
+  apiKey: process.env.OPENROUTER_API_KEY,
 });
 
 export const enhanceResponse = action({
-    args: {
-        prompt: v.string(),
-    },
-    handler: async (ctx, args) => {
-        const identity = await ctx.auth.getUserIdentity();
-        
-        if (identity === null) {
-            throw new ConvexError({ code: "UNAUTHORIZED", message: "Identity not found" });
-        }
-        
-        const orgId = identity.orgId as string;
-        
-        if (!orgId) {
-            throw new ConvexError({ code: "UNAUTHORIZED", message: "Organization not found" });
-        }
-        
-        const subscription = await ctx.runQuery(
-            internal.system.subscriptions.getByOrganizationId,
-            { organizationId: orgId }
-        )
-        
-        if (subscription?.status !== "active") {
-            throw new ConvexError({ code: "BAD_REQUEST", message: "Missing subscription" });
-        }
+  args: {
+    prompt: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
 
-        const response = await generateText({
-            model: openrouter("openrouter/free"),
-            messages: [
-                { role: "system", content: OPERATOR_MESSAGE_ENHANCEMENT_PROMPT },
-                { role: "user", content: args.prompt }
-            ]
-        })
-        return response.text
+    if (identity === null) {
+      throw new ConvexError({ code: "UNAUTHORIZED", message: "Identity not found" });
     }
+
+    const orgId = identity.orgId as string;
+
+    if (!orgId) {
+      throw new ConvexError({ code: "UNAUTHORIZED", message: "Organization not found" });
+    }
+
+    if (ENABLE_SUBSCRIPTION_CHECKS) {
+      const subscription = await ctx.runQuery(
+        internal.system.subscriptions.getByOrganizationId,
+        { organizationId: orgId }
+      );
+
+      if (subscription?.status !== "active") {
+        throw new ConvexError({
+          code: "BAD_REQUEST",
+          message: "Missing subscription",
+        });
+      }
+    }
+
+    const response = await generateText({
+      model: openrouter("openrouter/free"),
+      messages: [
+        { role: "system", content: OPERATOR_MESSAGE_ENHANCEMENT_PROMPT },
+        { role: "user", content: args.prompt }
+      ]
+    })
+    return response.text
+  }
 })
 
 export const create = mutation({

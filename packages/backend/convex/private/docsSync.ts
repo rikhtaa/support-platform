@@ -4,6 +4,7 @@ import { internal } from "../_generated/api";
 import { fetchGithubTree, shouldIncludeFile } from "../system/ai/githubDocsConfig";
 import type { UserIdentity } from "convex/server";
 import { Doc, Id } from "../_generated/dataModel";
+import { ENABLE_SUBSCRIPTION_CHECKS } from "../constants";
 
 // Extracts the caller's organization ID, throwing if they aren't signed in or have no org.
 function requireOrgIdentity(identity: UserIdentity | null): string {
@@ -36,16 +37,18 @@ export const startSync = action({
         const identity = await ctx.auth.getUserIdentity();
         const orgId = requireOrgIdentity(identity);
 
+        if (ENABLE_SUBSCRIPTION_CHECKS) {
         const subscription = await ctx.runQuery(
             internal.system.subscriptions.getByOrganizationId,
             { organizationId: orgId }
         );
-
+        
         if (subscription?.status !== "active") {
             throw new ConvexError({
                 code: "BAD_REQUEST",
                 message: "Missing subscription",
             });
+        }
         }
 
         // Prevent two overlapping syncs for the same organization —

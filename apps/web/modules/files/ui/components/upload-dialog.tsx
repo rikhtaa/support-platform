@@ -65,7 +65,6 @@ export const UploadDialog = ({
             await addFile({
                 bytes: await blob.arrayBuffer(),
                 filename,
-                mimeType: blob.type || "text/plain",
                 category: uploadForm.category
             })
 
@@ -126,7 +125,7 @@ export const UploadDialog = ({
                  id="filename"
                  onChange={(e) => setUploadForm((prev) => ({
                     ...prev,
-                    category: e.target.value,
+                    filename: e.target.value,
                  }))}
                  placeholder="Overrise default filename"
                  type="text"
@@ -138,6 +137,7 @@ export const UploadDialog = ({
                 "application/pdf": [".pdf"],
                 "text/csv": [".csv"],
                 "text/plain": [".txt"],
+                "text/markdown": [".md"],
                }}
                disabled={isUploading}
                maxFiles={1}
