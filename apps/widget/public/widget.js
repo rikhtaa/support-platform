@@ -4,10 +4,12 @@
   const CONFIG = {
     WIDGET_URL: "https://support-platform-widget-lime.vercel.app/widget",
     DEFAULT_POSITION: "bottom-right",
-    DEFAULT_COLOR: "#3b82f6",
   };
 
   const VALID_POSITIONS = ["bottom-right", "bottom-left", "top-right", "top-left"];
+
+  // Neutral fallback so the button is visible before any branding arrives.
+  const NEUTRAL_BUTTON_BG = "#18181b";
 
   const CHAT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -26,7 +28,9 @@
     let organizationId = null;
     let position = CONFIG.DEFAULT_POSITION;
 
-    let currentColor = CONFIG.DEFAULT_COLOR;
+    // No default brand color: stays null until the widget posts one.
+    let currentColor = null;
+    let currentName = "Chat";
 
     function getScript() {
       return (
@@ -34,10 +38,10 @@
         document.querySelector("script[data-organization-id]")
       );
     }
-     
+
     function resolvePosition(value) {
       if (!value) return CONFIG.DEFAULT_POSITION;
- 
+
       if (VALID_POSITIONS.indexOf(value) === -1) {
         console.warn(
           `Echo Widget: invalid data-position "${value}". ` +
@@ -46,23 +50,24 @@
         );
         return CONFIG.DEFAULT_POSITION;
       }
- 
+
       return value;
     }
- 
+
     function getPositionStyles(pos) {
       const isTop = pos.indexOf("top") === 0;
       const isLeft = pos.indexOf("left") !== -1;
- 
+
       const horizontal = isLeft ? "left: 20px;" : "right: 20px;";
       const buttonVertical = isTop ? "top: 20px;" : "bottom: 20px;";
       const containerVertical = isTop ? "top: 90px;" : "bottom: 90px;";
- 
+
       return {
         button: `${buttonVertical} ${horizontal}`,
         container: `${containerVertical} ${horizontal}`,
       };
     }
+
     const embedScript = getScript();
 
     if (!embedScript) {
@@ -81,7 +86,8 @@
 
     function hexToRgbString(hex) {
       const match = /^#?([0-9a-f]{6})$/i.exec(hex || "");
-      if (!match) return "59, 130, 246"; // default blue fallback
+      if (!match) return null;
+
       const intVal = parseInt(match[1], 16);
       const red = (intVal >> 16) & 255;
       const green = (intVal >> 8) & 255;
@@ -91,9 +97,22 @@
 
     function applyBranding() {
       if (!button) return;
+
+      // Until a custom color is posted, use the neutral fallback and no glow.
+      if (!currentColor) {
+        button.style.background = NEUTRAL_BUTTON_BG;
+        button.style.boxShadow = "none";
+        return;
+      }
+
       const rgb = hexToRgbString(currentColor);
       button.style.background = currentColor;
-      button.style.boxShadow = `0 4px 24px rgba(${rgb}, 0.35)`;
+      button.style.boxShadow = rgb ? `0 4px 24px rgba(${rgb}, 0.35)` : "none";
+    }
+
+    function applyName() {
+      if (!button) return;
+      button.setAttribute("aria-label", `${currentName} widget`);
     }
 
     function initWhenReady() {
@@ -104,14 +123,13 @@
 
     function render() {
       const positionStyles = getPositionStyles(position);
-      
+
       button = document.createElement("button");
       button.id = "echo-widget-button";
       button.innerHTML = CHAT_ICON;
       button.style.cssText = `
         position: fixed;
-        ${position === "bottom-right" ? "right: 20px;" : "left: 20px;"}
-        bottom: 20px;
+        ${positionStyles.button}
         width: 60px;
         height: 60px;
         border-radius: 50%;
@@ -125,6 +143,7 @@
         transition: all 0.2s ease;
       `;
       applyBranding();
+      applyName();
 
       button.addEventListener("click", toggleWidget);
       button.addEventListener("mouseenter", () => {
@@ -139,8 +158,7 @@
       container.id = "echo-widget-container";
       container.style.cssText = `
         position: fixed;
-        ${position === "bottom-right" ? "right: 20px;" : "left: 20px;"}
-        bottom: 90px;
+        ${positionStyles.container}
         width: 400px;
         height: 600px;
         max-width: calc(100vw - 40px);
@@ -189,9 +207,14 @@
           }
           break;
         case "branding":
-          if (payload && payload.primaryColor) {
-            currentColor = payload.primaryColor;
-            applyBranding();
+          // Only apply what the widget actually sends; a null color
+          // clears back to the neutral fallback.
+          currentColor = payload && payload.primaryColor ? payload.primaryColor : null;
+          applyBranding();
+
+          if (payload && payload.chatbotName) {
+            currentName = payload.chatbotName;
+            applyName();
           }
           break;
       }

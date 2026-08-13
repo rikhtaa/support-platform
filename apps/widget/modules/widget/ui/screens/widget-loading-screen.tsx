@@ -11,7 +11,7 @@ import { api } from "@workspace/backend/_generated/api";
 type InitStep = "org" | "session" | "vapi" | "done" | "settings";
 
 
-export const WidgetLoadingScreen = ({ organizationId }: {organizationId: string | null}) => {
+export const WidgetLoadingScreen = ({ organizationId }: { organizationId: string | null }) => {
   const [step, setStep] = useState<InitStep>("org")
   const [sessionValid, setSessionValid] = useState(false)
 
@@ -27,14 +27,14 @@ export const WidgetLoadingScreen = ({ organizationId }: {organizationId: string 
 
   // Step 1: Validate organization
   const validateOrganization = useAction(api.public.organizations.validate)
-  useEffect(()=>{
-    if(step !== "org"){
+  useEffect(() => {
+    if (step !== "org") {
       return
     }
 
     setLoadingMessage("Finding organization ID...")
-    
-    if(!organizationId){
+
+    if (!organizationId) {
       setErrorMessage("Organization ID is required")
       setScreen("error")
       return
@@ -42,32 +42,32 @@ export const WidgetLoadingScreen = ({ organizationId }: {organizationId: string 
 
     setLoadingMessage("Verifying organization...")
 
-    validateOrganization({ organizationId})
-    .then((result) => {
-      if(result.valid){
-        setOrganizationId(organizationId)
-        setStep("session")
-      }else{
-        setErrorMessage(result.reason || "Invalid configuration")
+    validateOrganization({ organizationId })
+      .then((result) => {
+        if (result.valid) {
+          setOrganizationId(organizationId)
+          setStep("session")
+        } else {
+          setErrorMessage(result.reason || "Invalid configuration")
+          setScreen("error")
+        }
+      })
+      .catch(() => {
+        setErrorMessage("Unable to verify organization")
         setScreen("error")
-      }
-    })
-    .catch(()=>{
-      setErrorMessage("Unable to verify organization")
-      setScreen("error")
-    })
+      })
   }, [step, organizationId, setErrorMessage, setScreen, setOrganizationId, setStep, validateOrganization, setLoadingMessage])
 
   // Step 2: Validate session (if exists)
   const validateContactSession = useMutation(api.public.contactSessions.validate)
   useEffect(() => {
-    if(step !== "session"){
+    if (step !== "session") {
       return
     }
-    
+
     setLoadingMessage("Finding Contact session ID...")
 
-    if(!contactSessionId){
+    if (!contactSessionId) {
       setSessionValid(false)
       setStep("settings")
       return
@@ -75,57 +75,57 @@ export const WidgetLoadingScreen = ({ organizationId }: {organizationId: string 
 
     setLoadingMessage("validating session...")
 
-    validateContactSession({contactSessionId})
-    .then((result)=>{
-      setSessionValid(result.valid)
-      setStep("settings")
-    })
-    .catch(()=>{
-      setSessionValid(false)
-      setStep("settings")
-    })
-  }, [step, contactSessionId, validateContactSession, setLoadingMessage]) 
+    validateContactSession({ contactSessionId })
+      .then((result) => {
+        setSessionValid(result.valid)
+        setStep("settings")
+      })
+      .catch(() => {
+        setSessionValid(false)
+        setStep("settings")
+      })
+  }, [step, contactSessionId, validateContactSession, setLoadingMessage])
 
   //Step 3: Load widget settings
-  const widgetSettings = useQuery(api.public.widgetSettings.getByOrganizationId, 
+  const widgetSettings = useQuery(api.public.widgetSettings.getByOrganizationId,
     organizationId ? {
       organizationId,
     } : "skip"
   )
   useEffect(() => {
-     if(step !== "settings"){
+    if (step !== "settings") {
       return
-     }
+    }
 
     setLoadingMessage("Loading widget settings...")
 
-      if(widgetSettings !== undefined){
-        setWidgetSettings(widgetSettings)
-        setStep("vapi")
-      }
+    if (widgetSettings !== undefined) {
+      setWidgetSettings(widgetSettings)
+      setStep("vapi")
+    }
   }, [
     step,
     widgetSettings,
     setStep,
     setWidgetSettings,
-    setLoadingMessage 
+    setLoadingMessage
   ])
 
   //Step 4: Load Vapi secrets (Optional)
   const getVapiSecrets = useAction(api.public.secrets.getVapiSecrets)
   useEffect(() => {
-     if(step !== "vapi"){
+    if (step !== "vapi") {
       return
-     }
+    }
 
-     if(!organizationId){
+    if (!organizationId) {
       setErrorMessage("Organization ID is required")
       setScreen("error")
       return
-     }
+    }
 
-     setLoadingMessage("Loading voice features...")
-     getVapiSecrets({ organizationId})
+    setLoadingMessage("Loading voice features...")
+    getVapiSecrets({ organizationId })
       .then((secrets) => {
         setVapiSecrets(secrets)
         setStep("done")
@@ -145,28 +145,28 @@ export const WidgetLoadingScreen = ({ organizationId }: {organizationId: string 
 
 
   useEffect(() => {
-     if(step !== "done"){
+    if (step !== "done") {
       return
-     }
+    }
 
-     const hasValidSession = contactSessionId && sessionValid
-     setScreen(hasValidSession ? "selection" : "auth")
+    const hasValidSession = contactSessionId && sessionValid
+    setScreen(hasValidSession ? "selection" : "auth")
   }, [step, contactSessionId, sessionValid, setScreen])
 
-    return (
-        <>
-        <WidgetHeader>
-            <div className="flex flex-col justify-between gap-y-2 px-2 py-6 font-semibold">
-              <p className="text-3xl">Hi there! 👋</p>
-              <p className="text-lg">Let'&apos;s get you started</p>
-            </div>
-         </WidgetHeader>
-         <div className="flex flex-1 flex-col items-center justify-center gap-y-4 p-4 text-muted-foreground">
-           <LoaderIcon className="animate-spin" />
-           <p className="text-sm">
-             {loadingMessage || "Loading..."}
-           </p>
-         </div>
-        </>
-    )
+  return (
+    <>
+      <div className="relative bg-muted p-4">
+        <div className="flex flex-col justify-between gap-y-2 px-2 py-6">
+          <div className="h-8 w-2/3 animate-pulse rounded bg-muted-foreground/20" />
+          <div className="h-5 w-1/3 animate-pulse rounded bg-muted-foreground/20" />
+        </div>
+      </div>
+      <div className="flex flex-1 flex-col items-center justify-center gap-y-4 p-4 text-muted-foreground">
+        <LoaderIcon className="animate-spin" />
+        <p className="text-sm">
+          {loadingMessage || "Loading..."}
+        </p>
+      </div>
+    </>
+  )
 }
