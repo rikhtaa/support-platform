@@ -9,10 +9,11 @@
   const VALID_POSITIONS = ["bottom-right", "bottom-left", "top-right", "top-left"];
 
   // Skeleton launcher colors, used only until the widget posts branding.
-  const SKELETON_BG = "#e4e4e7";       // zinc-200
-  const SKELETON_PULSE_BG = "#d4d4d8"; // zinc-300, the "lit" end of the pulse
+  const SKELETON_BG = "#e4e4e7";        // zinc-200
+  const SKELETON_PULSE_BG = "#f4f4f5";  // zinc-100, the bright sweep band
+  const SKELETON_ICON_COLOR = "#a1a1aa"; // zinc-400, muted icon on the skeleton
 
-  const CHAT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  const CHAT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
   </svg>`;
 
@@ -21,19 +22,31 @@
     <line x1="6" y1="6" x2="18" y2="18"></line>
   </svg>`;
 
-  // Injected once, so the skeleton circle can pulse via a keyframe animation.
+  // Injected once, so the skeleton circle can shimmer via a keyframe.
   const STYLE_ID = "echo-widget-styles";
   function injectStyles() {
     if (document.getElementById(STYLE_ID)) return;
     const style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = `
-      @keyframes echo-widget-pulse {
-        0%, 100% { background: ${SKELETON_BG}; }
-        50% { background: ${SKELETON_PULSE_BG}; }
+      @keyframes echo-widget-shimmer {
+        0% { background-position: -120px 0; }
+        100% { background-position: 120px 0; }
       }
       #echo-widget-button.echo-widget-skeleton {
-        animation: echo-widget-pulse 1.5s ease-in-out infinite;
+        background-image: linear-gradient(
+          100deg,
+          ${SKELETON_BG} 30%,
+          ${SKELETON_PULSE_BG} 50%,
+          ${SKELETON_BG} 70%
+        );
+        background-size: 240px 100%;
+        background-repeat: no-repeat;
+        animation: echo-widget-shimmer 1.4s ease-in-out infinite;
+      }
+      #echo-widget-button.echo-widget-skeleton svg {
+        color: ${SKELETON_ICON_COLOR};
+        opacity: 0.9;
       }
     `;
     document.head.appendChild(style);
@@ -47,11 +60,12 @@
     let organizationId = null;
     let position = CONFIG.DEFAULT_POSITION;
 
-    // No default brand color: null until the widget posts one.
+    // No default brand color: null until the widget posts one. The
+    // launcher stays a shimmering skeleton (grey circle + chat icon)
+    // until a real color arrives, then flips straight to branded —
+    // there is no intermediate neutral/black state.
     let currentColor = null;
     let currentName = "Chat";
-    // Tracks whether real branding has arrived. Until it does, the
-    // button stays in its skeleton (pulsing, icon-less) state.
     let hasBranding = false;
 
     function getScript() {
@@ -117,38 +131,33 @@
       return `${red}, ${green}, ${blue}`;
     }
 
-    // Puts the button into its pre-branding skeleton state: a pulsing
-    // gray circle with no icon.
+    // Pre-branding state: shimmering grey circle with a muted chat icon.
     function applySkeleton() {
       if (!button) return;
       button.classList.add("echo-widget-skeleton");
-      button.style.background = SKELETON_BG;
+      button.style.background = "";       // shimmer gradient owns the bg
       button.style.boxShadow = "none";
-      button.innerHTML = "";
+      button.style.color = SKELETON_ICON_COLOR;
+      if (!isOpen) button.innerHTML = CHAT_ICON;
     }
 
     function applyBranding() {
       if (!button) return;
 
-      // Still waiting on branding — keep the skeleton, don't draw the icon.
-      if (!hasBranding) {
+      // No color yet → stay a shimmering skeleton. Never show black.
+      if (!hasBranding || !currentColor) {
         applySkeleton();
         return;
       }
 
-      // Branding has arrived: stop pulsing, restore the icon, apply color.
+      // Real brand color: stop shimmer, white icon, apply color + glow.
       button.classList.remove("echo-widget-skeleton");
+      button.style.color = "white";
       if (!isOpen) button.innerHTML = CHAT_ICON;
 
-      if (currentColor) {
-        const rgb = hexToRgbString(currentColor);
-        button.style.background = currentColor;
-        button.style.boxShadow = rgb ? `0 4px 24px rgba(${rgb}, 0.35)` : "none";
-      } else {
-        // Branding message arrived but with no color — neutral, no glow.
-        button.style.background = "#18181b";
-        button.style.boxShadow = "none";
-      }
+      const rgb = hexToRgbString(currentColor);
+      button.style.background = currentColor;
+      button.style.boxShadow = rgb ? `0 4px 24px rgba(${rgb}, 0.35)` : "none";
     }
 
     function applyName() {
@@ -184,7 +193,6 @@
         justify-content: center;
         transition: all 0.2s ease;
       `;
-      // Start in skeleton state until branding arrives.
       applySkeleton();
       applyName();
 
@@ -250,10 +258,11 @@
           }
           break;
         case "branding":
-          // First branding message ends the skeleton state, whether or
-          // not a color was set — the widget has loaded either way.
-          hasBranding = true;
-          currentColor = payload && payload.primaryColor ? payload.primaryColor : null;
+          // Only leave the skeleton once a real color is present.
+          if (payload && payload.primaryColor) {
+            hasBranding = true;
+            currentColor = payload.primaryColor;
+          }
           if (payload && payload.chatbotName) {
             currentName = payload.chatbotName;
           }
@@ -277,8 +286,7 @@
           container.style.transform = "translateY(0)";
         }
       }, 10);
-      // Only show the close icon once we're past the skeleton state.
-      if (hasBranding) button.innerHTML = CLOSE_ICON;
+      button.innerHTML = CLOSE_ICON;
     }
 
     function closeWidget() {
