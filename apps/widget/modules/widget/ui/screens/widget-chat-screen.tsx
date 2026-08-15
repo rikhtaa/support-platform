@@ -158,6 +158,7 @@ export const WidgetChatScreen = () => {
 
   return (
     <AIMessage
+      className="min-w-0"
       from={message.role === "user" ? "user" : "assistant"}
       key={message.id}
     >
